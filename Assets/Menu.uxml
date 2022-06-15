@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/MenuButtons.uss?fileID=7433441132597879392&amp;guid=afac367fc838bbc4e96fdd530db6a842&amp;type=3#MenuButtons" />
+    <ui:VisualElement style="align-items: center; padding-left: 0; padding-right: 0; padding-top: 0; padding-bottom: 0; justify-content: center; height: 100%; width: 100%;">
+        <ui:VisualElement name="ButtonGroup">
+            <ui:Button text="Back to game" display-tooltip-when-elided="true" name="ButtonContinue" class="MenuButton" />
+            <ui:Button text="Exit Game" display-tooltip-when-elided="true" name="ButtonQuit" class="MenuButton" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
