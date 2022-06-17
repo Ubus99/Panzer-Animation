@@ -7,7 +7,7 @@ public class UI_Handler : MonoBehaviour
 {
     public Rigidbody player;
     public VisualTreeAsset debugScreen;
-    public VisualTreeAsset MainMenue;
+    public VisualTreeAsset mainMenue;
 
     private UIDocument UIDoc;
     //debug refs
@@ -17,10 +17,10 @@ public class UI_Handler : MonoBehaviour
     private Button UIContinue;
     private Button UIQuit;
 
-    private enum UIstate
+    public enum UIstate
     {
         MainMenu,
-        debugscreen,
+        debugScreen,
         hidden
     }
 
@@ -42,7 +42,7 @@ public class UI_Handler : MonoBehaviour
             case UIstate.MainMenu:
 
                 break;
-            case UIstate.debugscreen:
+            case UIstate.debugScreen:
 
                 UISpeedRef.text = "Velocity (x,y,z): " + player.velocity.ToString("0.00");
                 UITorqueRef.text = "Rotation (x,y,z): " + player.rotation.ToString("0.00");
@@ -50,12 +50,12 @@ public class UI_Handler : MonoBehaviour
         }
     }
 
-    public void SetScreen(string screen)
+    public void SetScreen(UIstate screen)
     {
         switch (screen)
         {
-            case "MainMenu":
-                UIDoc.visualTreeAsset = MainMenue;
+            case UIstate.MainMenu:
+                UIDoc.visualTreeAsset = mainMenue;
 
                 UIQuit = UIDoc.rootVisualElement.Q<Button>("ButtonQuit");
                 UIContinue = UIDoc.rootVisualElement.Q<Button>("ButtonContinue");
@@ -63,16 +63,16 @@ public class UI_Handler : MonoBehaviour
                 state = UIstate.MainMenu;
                 break;
 
-            case "debug":
+            case UIstate.debugScreen:
                 UIDoc.visualTreeAsset = debugScreen;
 
                 UISpeedRef = UIDoc.rootVisualElement.Q<Label>("speedIndicator");
                 UITorqueRef = UIDoc.rootVisualElement.Q<Label>("torqueIndicator");
 
-                state = UIstate.debugscreen;
+                state = UIstate.debugScreen;
                 break;
 
-            default:        //fallback, hide all menues
+            case UIstate.hidden:        //fallback, hide all menues
                 UIDoc.visualTreeAsset = null;
                 state = UIstate.hidden;
                 break;

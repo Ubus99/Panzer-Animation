@@ -45,11 +45,11 @@ public class GameLogic : MonoBehaviour
             gamestate = gamestates.Running;
             if (debugScreenActive)
             {
-                UIhandler.SetScreen("debug");
+                UIhandler.SetScreen(UI_Handler.UIstate.debugScreen);
             }
             else
             {
-                UIhandler.SetScreen("");
+                UIhandler.SetScreen(UI_Handler.UIstate.hidden);
             }
         }
         Cursor.lockState = CursorLockMode.None;
@@ -60,18 +60,18 @@ public class GameLogic : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape)) //open Main menu
         {
             gamestate = gamestates.Menu;
-            UIhandler.SetScreen("MainMenu");
+            UIhandler.SetScreen(UI_Handler.UIstate.MainMenu);
         }
         if (Input.GetKeyDown(KeyCode.F2))
         {
             if (debugScreenActive) //close debug
             {
-                UIhandler.SetScreen("");
+                UIhandler.SetScreen(UI_Handler.UIstate.hidden);
                 debugScreenActive = false;
             }
             else //open debug
             {
-                UIhandler.SetScreen("debug");
+                UIhandler.SetScreen(UI_Handler.UIstate.debugScreen);
                 debugScreenActive = true;
             }
         }

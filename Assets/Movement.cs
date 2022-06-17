@@ -5,6 +5,9 @@ using UnityEngine;
 public class Movement : MonoBehaviour
 {
 	private Rigidbody body;
+	private Rigidbody turret;
+	private Rigidbody barrel_1;
+	private Rigidbody barrel_2;
 	public float verticalAcceleration, horizontalAcceleration, rotationalAcceleration = 1;
 	public float maxSpeed, maxRotation = 1;
 
@@ -12,7 +15,10 @@ public class Movement : MonoBehaviour
 	void Start()
 	{
 		body = GetComponent<Rigidbody>();
-	}
+		turret = GetComponent<Rigidbody>(); //todo
+		barrel_1 = GetComponent<Rigidbody>(); //todo
+		barrel_2 = GetComponent<Rigidbody>(); //todo
+}
 
 	// Update is called once per frame
 	void Update()
@@ -35,5 +41,7 @@ public class Movement : MonoBehaviour
         else {
 			body.AddRelativeTorque(Vector3.up * Input.GetAxis("Rotate") * rotationalAcceleration, ForceMode.Force);
 		}
+
+
 	}
 }
