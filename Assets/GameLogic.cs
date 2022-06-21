@@ -20,7 +20,7 @@ public class GameLogic : MonoBehaviour
     void Start()
     {
         UIhandler = UI.GetComponent<UI_Handler>();
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame
@@ -52,7 +52,7 @@ public class GameLogic : MonoBehaviour
                 UIhandler.SetScreen(UI_Handler.UIstate.hidden);
             }
         }
-        Cursor.lockState = CursorLockMode.None;
+        //Cursor.lockState = CursorLockMode.None;
     }
 
     void RunningBehavior()
@@ -75,6 +75,6 @@ public class GameLogic : MonoBehaviour
                 debugScreenActive = true;
             }
         }
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
 }
