@@ -457,7 +457,7 @@ Material:
     - _UVDetail: 0
     - _UVEmissive: 0
     - _UVSec: 0
-    - _Unlit_Intensity: 1
+    - _Unlit_Intensity: 0
     - _UseEmissiveIntensity: 0
     - _UseShadowThreshold: 0
     - _Use_1stAs2nd: 0
@@ -473,8 +473,8 @@ Material:
     - _simpleUI: 1
     - _utsTechnique: 0
     - _utsVersionX: 0
-    - _utsVersionY: 6
-    - _utsVersionZ: 1
+    - _utsVersionY: 7
+    - _utsVersionZ: 3
     m_Colors:
     - _1st_ShadeColor: {r: 0.23584908, g: 0.23584908, b: 0.23584908, a: 1}
     - _2nd_ShadeColor: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 1}
@@ -484,7 +484,7 @@ Material:
     - _BaseColor: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
     - _BaseColorMap_MipInfo: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColorMaskColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color: {r: 0.4056604, g: 0.4056604, b: 0.4056604, a: 1}
+    - _Color: {r: 0.40566036, g: 0.40566036, b: 0.40566036, a: 1}
     - _ColorShift: {r: 0, g: 0, b: 0, a: 1}
     - _DiffusionProfileAsset: {r: 0, g: 0, b: 0, a: 0}
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}

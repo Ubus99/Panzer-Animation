@@ -260,7 +260,7 @@ Material:
     - _Tweak_SystemShadowsLevel: 0
     - _Tweak_transparency: 0
     - _UVSec: 0
-    - _Unlit_Intensity: 1
+    - _Unlit_Intensity: 0
     - _Use_1stAs2nd: 1
     - _Use_BaseAs1st: 1
     - _ZOverDrawMode: 0
@@ -271,7 +271,7 @@ Material:
     - _utsTechnique: 0
     - _utsVersionX: 0
     - _utsVersionY: 7
-    - _utsVersionZ: 2
+    - _utsVersionZ: 3
     m_Colors:
     - _1st_ShadeColor: {r: 0.3019608, g: 0.3019608, b: 0.3019608, a: 1}
     - _2nd_ShadeColor: {r: 0.14901961, g: 0.14901961, b: 0.14901961, a: 1}

@@ -72,7 +72,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.visualstudio": {
-      "version": "2.0.14",
+      "version": "2.0.16",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -154,7 +154,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.toonshader": {
-      "version": "0.7.2-preview",
+      "version": "0.7.3-preview",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -172,7 +172,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.7.6",
+      "version": "1.7.8",
       "depth": 0,
       "source": "registry",
       "dependencies": {
