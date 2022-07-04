@@ -6294,47 +6294,54 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5fa847e6cf74264180f6a36dd7672e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotateX: 0
+  rotateY: 0
+  rotateZ: 0
   childCollider: {fileID: 0}
-  nDMapping: {fileID: 0}
-  hoverLock: 1
-  limited: 1
+  threeAxisMapping: {fileID: 0}
+  hoverLock: 0
+  limited: 0
   frozenDistanceMinMaxThreshold: {x: 0.1, y: 0.2}
   onFrozenDistanceThreshold:
     m_PersistentCalls:
       m_Calls: []
   minAngle: {x: -45, y: -45, z: -45}
-  freezeOnMinX: 0
-  onMinXAngle:
+  freezeXOnMin: 0
+  freezeYOnMin: 0
+  freezeZOnMin: 0
+  onXMinAngle:
     m_PersistentCalls:
       m_Calls: []
-  freezeOnMinY: 0
-  onMinYAngle:
+  onYMinAngle:
     m_PersistentCalls:
       m_Calls: []
-  freezeOnMinZ: 0
-  onMinZAngle:
+  onZMinAngle:
     m_PersistentCalls:
       m_Calls: []
   maxAngle: {x: 45, y: 45, z: 45}
-  freezeOnMaxX: 0
-  onMaxXAngle:
+  freezeXOnMax: 0
+  freezeYOnMax: 0
+  freezeZOnMax: 0
+  onXMaxAngle:
     m_PersistentCalls:
       m_Calls: []
-  freezeOnMaxY: 0
-  onMaxYAngle:
+  onYMaxAngle:
     m_PersistentCalls:
       m_Calls: []
-  freezeOnMaxZ: 0
-  onMaxZAngle:
+  onZMaxAngle:
     m_PersistentCalls:
       m_Calls: []
   forceStart: 0
-  startAngle: {x: 0, y: 0, z: 0}
+  startXAngle: 0
+  startYAngle: 0
+  startZAngle: 0
   rotateGameObject: 1
-  debugPath: 1
+  debugPath: 0
   dbgPathLimit: 50
   debugText: {fileID: 0}
-  outAngle: {x: 0, y: 0, z: 0}
+  outXAngle: 0
+  outYAngle: 0
+  outZAngle: 0
 --- !u!1001 &1723146931
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -7480,8 +7487,7 @@ MonoBehaviour:
   - {fileID: 1723146933}
   - {fileID: 205365869}
   - {fileID: 407314708}
-  SpawnPoints:
-  - {x: 0, y: 100, z: 0}
+  SpawnPoints: []
 --- !u!1 &1949968045
 GameObject:
   m_ObjectHideFlags: 0

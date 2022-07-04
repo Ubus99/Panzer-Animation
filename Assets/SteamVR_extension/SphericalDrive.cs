@@ -7,29 +7,32 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Valve.VR.InteractionSystem
 {
 
 	//-------------------------------------------------------------------------
 	[RequireComponent(typeof(Interactable))]
-	public class CircularDrive : MonoBehaviour
+	public class SphericalDrive : MonoBehaviour
 	{
 		public enum Axis_t
 		{
-			XAxis,
-			YAxis,
-			ZAxis
+			Disabled,
+			Angular,
+			Rotational
 		};
 
-		[Tooltip("The axis around which the circular drive will rotate in local space")]
-		public Axis_t axisOfRotation = Axis_t.XAxis;
+		[Tooltip("The axis' around which the circular drive will rotate in local space")]
+		public Axis_t rotateX = Axis_t.Disabled;
+		public Axis_t rotateY = Axis_t.Disabled;
+		public Axis_t rotateZ = Axis_t.Disabled;
 
 		[Tooltip("Child GameObject which has the Collider component to initiate interaction, only needs to be set if there is more than one Collider child")]
 		public Collider childCollider = null;
 
 		[Tooltip("A LinearMapping component to drive, if not specified one will be dynamically added to this GameObject")]
-		public LinearMapping linearMapping;
+		public nDMapping threeAxisMapping;
 
 		[Tooltip("If true, the drive will stay manipulating as long as the button is held down, if false, it will stop if the controller moves out of the collider")]
 		public bool hoverLock = false;
@@ -42,24 +45,34 @@ namespace Valve.VR.InteractionSystem
 
 		[HeaderAttribute("Limited Rotation Min")]
 		[Tooltip("If limited is true, the specifies the lower limit, otherwise value is unused")]
-		public float minAngle = -45.0f;
+		public Vector3 minAngle = new Vector3(-45.0f, -45.0f, -45.0f);
 		[Tooltip("If limited, set whether drive will freeze its angle when the min angle is reached")]
-		public bool freezeOnMin = false;
+		public bool freezeXOnMin = false;
+		public bool freezeYOnMin = false;
+		public bool freezeZOnMin = false;
 		[Tooltip("If limited, event invoked when minAngle is reached")]
-		public UnityEvent onMinAngle;
+		public UnityEvent onXMinAngle;
+		public UnityEvent onYMinAngle;
+		public UnityEvent onZMinAngle;
 
 		[HeaderAttribute("Limited Rotation Max")]
 		[Tooltip("If limited is true, the specifies the upper limit, otherwise value is unused")]
-		public float maxAngle = 45.0f;
+		public Vector3 maxAngle = new Vector3(45.0f, 45.0f, 45.0f);
 		[Tooltip("If limited, set whether drive will freeze its angle when the max angle is reached")]
-		public bool freezeOnMax = false;
+		public bool freezeXOnMax = false;
+		public bool freezeYOnMax = false;
+		public bool freezeZOnMax = false;
 		[Tooltip("If limited, event invoked when maxAngle is reached")]
-		public UnityEvent onMaxAngle;
+		public UnityEvent onXMaxAngle;
+		public UnityEvent onYMaxAngle;
+		public UnityEvent onZMaxAngle;
 
 		[Tooltip("If limited is true, this forces the starting angle to be startAngle, clamped to [minAngle, maxAngle]")]
 		public bool forceStart = false;
 		[Tooltip("If limited is true and forceStart is true, the starting angle will be this, clamped to [minAngle, maxAngle]")]
-		public float startAngle = 0.0f;
+		public float startXAngle = 0.0f;
+		public float startYAngle = 0.0f;
+		public float startZAngle = 0.0f;
 
 		[Tooltip("If true, the transform of the GameObject this component is on will be rotated accordingly")]
 		public bool rotateGameObject = true;
@@ -73,14 +86,34 @@ namespace Valve.VR.InteractionSystem
 		public TextMesh debugText = null;
 
 		[Tooltip("The output angle value of the drive in degrees, unlimited will increase or decrease without bound, take the 360 modulus to find number of rotations")]
-		public float outAngle;
+		public float outXAngle;
+		public float outYAngle;
+		public float outZAngle;
 
 		private Quaternion start;
 
-		private Vector3 worldPlaneNormal = new Vector3(1.0f, 0.0f, 0.0f);
-		private Vector3 localPlaneNormal = new Vector3(1.0f, 0.0f, 0.0f);
+		private Vector3 worldPlaneNormalX = Vector3.right;
+		private Vector3 worldPlaneNormalY = Vector3.up;
+		private Vector3 worldPlaneNormalZ = Vector3.forward;
 
-		private Vector3 lastHandProjected;
+		private Vector3 localPlaneNormalX = Vector3.right;
+		private Vector3 localPlaneNormalY = Vector3.up;
+		private Vector3 localPlaneNormalZ = Vector3.forward;
+
+		/// <summary>
+		/// buffers the last hand location projected on the YZ plane
+		/// </summary>
+		private Vector3 lastHandProjectedOnX;
+
+		/// <summary>
+		/// buffers the last hand location projected on the XZ plane
+		/// </summary>
+		private Vector3 lastHandProjectedOnY;
+
+		/// <summary>
+		/// buffers the last hand location projected on the XY plane
+		/// </summary>
+		private Vector3 lastHandProjectedOnZ;
 
 		private Color red = new Color(1.0f, 0.0f, 0.0f);
 		private Color green = new Color(0.0f, 1.0f, 0.0f);
@@ -97,7 +130,9 @@ namespace Valve.VR.InteractionSystem
 		private float minMaxAngularThreshold = 1.0f;
 
 		private bool frozen = false;
-		private float frozenAngle = 0.0f;
+		private float frozenXAngle = 0.0f;
+		private float frozenYAngle = 0.0f;
+		private float frozenZAngle = 0.0f;
 		private Vector3 frozenHandWorldPos = new Vector3(0.0f, 0.0f, 0.0f);
 		private Vector2 frozenSqDistanceMinMaxThreshold = new Vector2(0.0f, 0.0f);
 
@@ -109,7 +144,9 @@ namespace Valve.VR.InteractionSystem
 		private void Freeze(Hand hand)
 		{
 			frozen = true;
-			frozenAngle = outAngle;
+			frozenXAngle = outXAngle;
+			frozenYAngle = outYAngle;
+			frozenZAngle = outZAngle;
 			frozenHandWorldPos = hand.hoverSphereTransform.position;
 			frozenSqDistanceMinMaxThreshold.x = frozenDistanceMinMaxThreshold.x * frozenDistanceMinMaxThreshold.x;
 			frozenSqDistanceMinMaxThreshold.y = frozenDistanceMinMaxThreshold.y * frozenDistanceMinMaxThreshold.y;
@@ -136,40 +173,83 @@ namespace Valve.VR.InteractionSystem
 				childCollider = GetComponentInChildren<Collider>();
 			}
 
-			if (linearMapping == null)
+			if (threeAxisMapping == null)
 			{
-				linearMapping = GetComponent<LinearMapping>();
+				threeAxisMapping = GetComponent<nDMapping>();
+				if (threeAxisMapping != null)
+				{
+					threeAxisMapping.values.TryAdd("X", 0.0f);
+					threeAxisMapping.values.TryAdd("Y", 0.0f);
+					threeAxisMapping.values.TryAdd("Z", 0.0f);
+				}
 			}
 
-			if (linearMapping == null)
+			if (threeAxisMapping == null)
 			{
-				linearMapping = gameObject.AddComponent<LinearMapping>();
+				threeAxisMapping = gameObject.AddComponent<nDMapping>();
+				threeAxisMapping.values.TryAdd("X", 0.0f);
+				threeAxisMapping.values.TryAdd("Y", 0.0f);
+				threeAxisMapping.values.TryAdd("Z", 0.0f);
 			}
 
-			worldPlaneNormal = new Vector3(0.0f, 0.0f, 0.0f);
-			worldPlaneNormal[(int)axisOfRotation] = 1.0f;
+			//worldPlaneNormal = new Vector3(0.0f, 0.0f, 0.0f); now handled locally
+			//worldPlaneNormal[(int)axisOfRotation] = 1.0f;
 
-			localPlaneNormal = worldPlaneNormal;
+			//localPlaneNormal = worldPlaneNormal;
 
 			if (transform.parent)
 			{
-				worldPlaneNormal = transform.parent.localToWorldMatrix.MultiplyVector(worldPlaneNormal).normalized;
+				worldPlaneNormalX = transform.parent.localToWorldMatrix.MultiplyVector(worldPlaneNormalX).normalized;
+				worldPlaneNormalY = transform.parent.localToWorldMatrix.MultiplyVector(worldPlaneNormalY).normalized;
+				worldPlaneNormalZ = transform.parent.localToWorldMatrix.MultiplyVector(worldPlaneNormalZ).normalized;
 			}
 
 			if (limited)
 			{
 				start = Quaternion.identity;
-				outAngle = transform.localEulerAngles[(int)axisOfRotation];
+				outXAngle = transform.localEulerAngles.x;
+				outYAngle = transform.localEulerAngles.y;
+				outZAngle = transform.localEulerAngles.z;
 
 				if (forceStart)
 				{
-					outAngle = Mathf.Clamp(startAngle, minAngle, maxAngle);
+					outXAngle = Mathf.Clamp(startXAngle, minAngle.x, maxAngle.x);
+					outYAngle = Mathf.Clamp(startYAngle, minAngle.y, maxAngle.y);
+					outZAngle = Mathf.Clamp(startZAngle, minAngle.z, maxAngle.z);
 				}
 			}
-			else
+			else //for each selected axis, set absolute start angle
 			{
-				start = Quaternion.AngleAxis(transform.localEulerAngles[(int)axisOfRotation], localPlaneNormal);
-				outAngle = 0.0f;
+				start = Quaternion.identity;
+				switch (rotateX)
+				{
+					case Axis_t.Angular:
+						start *= Quaternion.AngleAxis(transform.localEulerAngles.x, localPlaneNormalX);
+						break;
+					case Axis_t.Rotational:
+						break;
+				}
+				switch (rotateY)
+				{
+					case Axis_t.Angular:
+						start *= Quaternion.AngleAxis(transform.localEulerAngles.y, localPlaneNormalY);
+						break;
+					case Axis_t.Rotational:
+						break;
+				}
+				switch (rotateZ)
+				{
+					case Axis_t.Angular:
+						start *= Quaternion.AngleAxis(transform.localEulerAngles.z, localPlaneNormalZ);
+						break;
+					case Axis_t.Rotational:
+						break;
+				}
+
+				//reset relative start angle
+				outXAngle = 0.0f;
+				outYAngle = 0.0f;
+				outZAngle = 0.0f;
 			}
 
 			if (debugText)
@@ -249,7 +329,9 @@ namespace Valve.VR.InteractionSystem
 			{
 				grabbedWithType = startingGrabType;
 				// Trigger was just pressed
-				lastHandProjected = ComputeToTransformProjected(hand.hoverSphereTransform);
+				lastHandProjectedOnX = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormalX);
+				lastHandProjectedOnY = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormalY);
+				lastHandProjectedOnZ = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormalZ);
 
 				if (hoverLock)
 				{
@@ -286,15 +368,15 @@ namespace Valve.VR.InteractionSystem
 
 
 		//-------------------------------------------------
-		private Vector3 ComputeToTransformProjected(Transform xForm)
+		private Vector3 ComputeToTransformProjected(Transform xForm, Vector3 Normal)
 		{
-			Vector3 toTransform = (xForm.position - transform.position).normalized;
+			Vector3 toTransform = (xForm.position - transform.position).normalized; //get 3D movement
 			Vector3 toTransformProjected = new Vector3(0.0f, 0.0f, 0.0f);
 
-			// Need a non-zero distance from the hand to the center of the CircularDrive
-			if (toTransform.sqrMagnitude > 0.0f)
+			// Need a non-zero distance from the hand to the center of the sphericalDrive
+			if (toTransform.sqrMagnitude > 0.0f) //if movement
 			{
-				toTransformProjected = Vector3.ProjectOnPlane(toTransform, worldPlaneNormal).normalized;
+				toTransformProjected = Vector3.ProjectOnPlane(toTransform, Normal).normalized;
 			}
 			else
 			{
@@ -304,7 +386,7 @@ namespace Valve.VR.InteractionSystem
 
 			if (debugPath && dbgPathLimit > 0)
 			{
-				DrawDebugPath(xForm, toTransformProjected);
+				DrawDebugPath(xForm, toTransformProjected); //todo might not work
 			}
 
 			return toTransformProjected;
@@ -393,13 +475,21 @@ namespace Valve.VR.InteractionSystem
 			if (limited)
 			{
 				// Map it to a [0, 1] value
-				linearMapping.value = (outAngle - minAngle) / (maxAngle - minAngle);
+				threeAxisMapping.values["X"] = (outXAngle - minAngle.x) / (maxAngle.x - minAngle.x);
+				threeAxisMapping.values["Y"] = (outYAngle - minAngle.y) / (maxAngle.y - minAngle.y);
+				threeAxisMapping.values["Z"] = (outZAngle - minAngle.z) / (maxAngle.z - minAngle.z);
 			}
 			else
 			{
 				// Normalize to [0, 1] based on 360 degree windings
-				float flTmp = outAngle / 360.0f;
-				linearMapping.value = flTmp - Mathf.Floor(flTmp);
+				float flTmp = outXAngle / 360.0f;
+				threeAxisMapping.values["X"] = flTmp - Mathf.Floor(flTmp);
+
+				flTmp = outYAngle / 360.0f;
+				threeAxisMapping.values["Y"] = flTmp - Mathf.Floor(flTmp);
+
+				flTmp = outZAngle / 360.0f;
+				threeAxisMapping.values["Z"] = flTmp - Mathf.Floor(flTmp);
 			}
 
 			UpdateDebugText();
@@ -411,9 +501,12 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void UpdateGameObject()
 		{
-			if (rotateGameObject)
+			if (rotateGameObject) //get absolute rotation from adding all virtual angles to the relative starting point
 			{
-				transform.localRotation = start * Quaternion.AngleAxis(outAngle, localPlaneNormal);
+				Quaternion rTemp = start * Quaternion.AngleAxis(outXAngle, localPlaneNormalX);
+				rTemp *= Quaternion.AngleAxis(outYAngle, localPlaneNormalY);
+				rTemp *= Quaternion.AngleAxis(outZAngle, localPlaneNormalZ);
+				transform.localRotation = rTemp;
 			}
 		}
 
@@ -425,7 +518,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			if (debugText)
 			{
-				debugText.text = string.Format("Linear: {0}\nAngle:  {1}\n", linearMapping.value, outAngle);
+				debugText.text = string.Format("Linear: {0}\nAngle:  {1}\n", threeAxisMapping.values.ToString(), new string(outXAngle + " | " + outYAngle + " | " + outZAngle));
 			}
 		}
 
@@ -444,22 +537,26 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		// Computes the angle to rotate the game object based on the change in the transform
 		//-------------------------------------------------
-		private void ComputeAngle(Hand hand)
+		private void ComputeAngle(Hand hand) //todo currently x axis only and only for axial movement
 		{
-			Vector3 toHandProjected = ComputeToTransformProjected(hand.hoverSphereTransform);
+			//get projection of hand position
+			Dictionary<string, Vector3> toHandProjected;
+			Vector3 toHandProjectedOnX = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormalX);
+			Vector3 toHandProjectedOnY = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormalY);
+			Vector3 toHandProjectedOnZ = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormalZ);
 
-			if (!toHandProjected.Equals(lastHandProjected))
+			if (!toHandProjectedOnX.Equals(lastHandProjectedOnX)) //has there been movement?
 			{
-				float absAngleDelta = Vector3.Angle(lastHandProjected, toHandProjected);
+				float absXAngleDelta = Vector3.Angle(lastHandProjectedOnX, toHandProjectedOnX); //get time delta angle of projections
 
-				if (absAngleDelta > 0.0f)
+				if (absXAngleDelta > 0.0f) //is angle positive? savety check
 				{
-					if (frozen)
+					if (frozen) //is frozen but movement is attemptet -> indicate locked state
 					{
 						float frozenSqDist = (hand.hoverSphereTransform.position - frozenHandWorldPos).sqrMagnitude;
 						if (frozenSqDist > frozenSqDistanceMinMaxThreshold.x)
 						{
-							outAngle = frozenAngle + Random.Range(-1.0f, 1.0f);
+							outXAngle = frozenXAngle + Random.Range(-1.0f, 1.0f);
 
 							float magnitude = Util.RemapNumberClamped(frozenSqDist, frozenSqDistanceMinMaxThreshold.x, frozenSqDistanceMinMaxThreshold.y, 0.0f, 1.0f);
 							if (magnitude > 0)
@@ -477,68 +574,63 @@ namespace Valve.VR.InteractionSystem
 							}
 						}
 					}
-					else
+					else //is not frozen
 					{
-						Vector3 cross = Vector3.Cross(lastHandProjected, toHandProjected).normalized;
-						float dot = Vector3.Dot(worldPlaneNormal, cross);
+						Vector3 cross = Vector3.Cross(lastHandProjectedOnX, toHandProjectedOnX).normalized; //get normal to moved angle
+						float dot = Vector3.Dot(worldPlaneNormalX, cross);
 
-						float signedAngleDelta = absAngleDelta;
-
-						if (dot < 0.0f)
-						{
-							signedAngleDelta = -signedAngleDelta;
-						}
+						float signedXAngleDelta = (dot < 0.0f) ? -absXAngleDelta : absXAngleDelta; //assign direction to angle
 
 						if (limited)
 						{
-							float angleTmp = Mathf.Clamp(outAngle + signedAngleDelta, minAngle, maxAngle);
+							float angleXTmp = Mathf.Clamp(outXAngle + signedXAngleDelta, minAngle.x, maxAngle.x); //clamp on axis
 
-							if (outAngle == minAngle)
+							if (outXAngle == minAngle.x) //is min
 							{
-								if (angleTmp > minAngle && absAngleDelta < minMaxAngularThreshold)
+								if (angleXTmp > minAngle.x && absXAngleDelta < minMaxAngularThreshold) //ignore small movement
 								{
-									outAngle = angleTmp;
-									lastHandProjected = toHandProjected;
+									outXAngle = angleXTmp;
+									lastHandProjectedOnX = toHandProjectedOnX;
 								}
 							}
-							else if (outAngle == maxAngle)
+							else if (outXAngle == maxAngle.x) //is max
 							{
-								if (angleTmp < maxAngle && absAngleDelta < minMaxAngularThreshold)
+								if (angleXTmp < maxAngle.x && absXAngleDelta < minMaxAngularThreshold) //ignore small movement
 								{
-									outAngle = angleTmp;
-									lastHandProjected = toHandProjected;
+									outXAngle = angleXTmp;
+									lastHandProjectedOnX = toHandProjectedOnX;
 								}
 							}
-							else if (angleTmp == minAngle)
+							else if (angleXTmp == minAngle.x)
 							{
-								outAngle = angleTmp;
-								lastHandProjected = toHandProjected;
-								onMinAngle.Invoke();
-								if (freezeOnMin)
+								outXAngle = angleXTmp;
+								lastHandProjectedOnX = toHandProjectedOnX;
+								onXMinAngle.Invoke();
+								if (freezeXOnMin)
 								{
 									Freeze(hand);
 								}
 							}
-							else if (angleTmp == maxAngle)
+							else if (angleXTmp == maxAngle.x)
 							{
-								outAngle = angleTmp;
-								lastHandProjected = toHandProjected;
-								onMaxAngle.Invoke();
-								if (freezeOnMax)
+								outXAngle = angleXTmp;
+								lastHandProjectedOnX = toHandProjectedOnX;
+								onXMaxAngle.Invoke();
+								if (freezeXOnMax)
 								{
 									Freeze(hand);
 								}
 							}
 							else
 							{
-								outAngle = angleTmp;
-								lastHandProjected = toHandProjected;
+								outXAngle = angleXTmp;
+								lastHandProjectedOnX = toHandProjectedOnX;
 							}
 						}
 						else
 						{
-							outAngle += signedAngleDelta;
-							lastHandProjected = toHandProjected;
+							outXAngle += signedXAngleDelta;
+							lastHandProjectedOnX = toHandProjectedOnX;
 						}
 					}
 				}
