@@ -9,16 +9,16 @@ public class Engine : MonoBehaviour
 	public void Hover(Rigidbody body, float springStrength, float hoverDistance, float dampening)
 	{
 
-		if (Physics.Raycast(transform.position, Vector3.down, out RaycastHit hit, hoverDistance))//todo make ray align to engine angle
+		if (Physics.Raycast(transform.position, -transform.forward, out RaycastHit hit, hoverDistance))//todo make ray align to engine angle
 		{
-			Vector3 engineVector = (Vector3.up * springStrength * HooksLawDampen(hoverDistance, hit.distance, dampening));// / Mathf.Pow(hit.distance, EngineFalloff);
+			Vector3 engineVector = HooksLawDampen(hoverDistance, hit.distance, dampening) * springStrength * transform.forward;// / Mathf.Pow(hit.distance, EngineFalloff);
 
-			Debug.DrawRay(transform.position, transform.localPosition + (Vector3.down * hoverDistance), Color.red);
+			Debug.DrawRay(transform.position, transform.localPosition - (transform.forward * hoverDistance), Color.red);
 			body.AddForceAtPosition(engineVector, transform.position, ForceMode.Force);
 		}
 		else
 		{
-			Debug.DrawRay(transform.position, transform.localPosition + (Vector3.down * hoverDistance), Color.green);
+			Debug.DrawRay(transform.position, transform.localPosition - (transform.forward * hoverDistance), Color.green);
 		}
 	}
 
