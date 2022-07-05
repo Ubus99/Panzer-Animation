@@ -677,55 +677,52 @@ namespace Valve.VR.InteractionSystem
 		private void ComputeGripAngle(Hand hand, Axis axis, bool freezeOnMax, UnityEvent onMaxAngle) //todo ported from lever mode test
 		{
 			//get projection of hand position
-			//Vector3 toHandProjected = ComputeToTransformProjected(hand.hoverSphereTransform, worldPlaneNormals[axis]);
-			float projectedAngle = 0; //todo get angle along global axis
+			float currentHandAngle = hand.hoverSphereTransform.eulerAngles[(int)axis]; //todo get angle along global axis
 
-			if (!projectedAngle.Equals(lastHandAngleProjected[axis])) //has there been movement?
+			if (!currentHandAngle.Equals(lastHandAngleProjected[axis])) //has there been movement?
 			{
-				float absAngleDelta = Vector3.Angle(lastHandVectorProjected[axis], projectedAngle); //get time delta angle of projections
+				float absAngleDelta = lastHandAngleProjected[axis] - currentHandAngle; //get time delta angle of projections
 
-				if (absAngleDelta > 0.0f) //is angle positive? savety check
+				if (frozen) //is frozen but movement is attemptet -> indicate locked state
 				{
-					if (frozen) //is frozen but movement is attemptet -> indicate locked state
+					float frozenSqDist = (hand.hoverSphereTransform.position - frozenHandWorldPos).sqrMagnitude;
+					if (frozenSqDist > frozenSqDistanceMinMaxThreshold.x)
 					{
-						float frozenSqDist = (hand.hoverSphereTransform.position - frozenHandWorldPos).sqrMagnitude;
-						if (frozenSqDist > frozenSqDistanceMinMaxThreshold.x)
+						outAngle[(int)axis] = frozenAngle[(int)axis] + Random.Range(-1.0f, 1.0f);
+
+						float magnitude = Util.RemapNumberClamped(frozenSqDist, frozenSqDistanceMinMaxThreshold.x, frozenSqDistanceMinMaxThreshold.y, 0.0f, 1.0f);
+						if (magnitude > 0)
 						{
-							outAngle[(int)axis] = frozenAngle[(int)axis] + Random.Range(-1.0f, 1.0f);
+							StartCoroutine(HapticPulses(hand, magnitude, 10));
+						}
+						else
+						{
+							StartCoroutine(HapticPulses(hand, 0.5f, 10));
+						}
 
-							float magnitude = Util.RemapNumberClamped(frozenSqDist, frozenSqDistanceMinMaxThreshold.x, frozenSqDistanceMinMaxThreshold.y, 0.0f, 1.0f);
-							if (magnitude > 0)
-							{
-								StartCoroutine(HapticPulses(hand, magnitude, 10));
-							}
-							else
-							{
-								StartCoroutine(HapticPulses(hand, 0.5f, 10));
-							}
-
-							if (frozenSqDist >= frozenSqDistanceMinMaxThreshold.y)
-							{
-								onFrozenDistanceThreshold.Invoke();
-							}
+						if (frozenSqDist >= frozenSqDistanceMinMaxThreshold.y)
+						{
+							onFrozenDistanceThreshold.Invoke();
 						}
 					}
 					else //is not frozen
 					{
-						Vector3 cross = Vector3.Cross(lastHandVectorProjected[axis], toHandProjected).normalized; //get normal to moved angle
-						float dot = Vector3.Dot(worldPlaneNormals[axis], cross);
+						//Vector3 cross = Vector3.Cross(lastHandVectorProjected[axis], currentHandAngle).normalized; //get normal to moved angle
+						//float dot = Vector3.Dot(worldPlaneNormals[axis], cross);
 
-						float signedAngleDelta = (dot < 0.0f) ? -absAngleDelta : absAngleDelta; //assign direction to angle
+						//float signedAngleDelta = (dot < 0.0f) ? -absAngleDelta : absAngleDelta; //assign direction to angle
 
 						if (limited)
 						{
-							float angleTmp = Mathf.Clamp(outAngle[(int)axis] + signedAngleDelta, minAngle[(int)axis], maxAngle[(int)axis]); //clamp on axis
+							//float angleTmp = Mathf.Clamp(outAngle[(int)axis] + signedAngleDelta, minAngle[(int)axis], maxAngle[(int)axis]); //clamp on axis
+							float angleTmp = Mathf.Clamp(outAngle[(int)axis] + currentHandAngle, minAngle[(int)axis], maxAngle[(int)axis]); //clamp on axis
 
 							if (outAngle[(int)axis] == minAngle[(int)axis]) //is min
 							{
 								if (angleTmp > minAngle[(int)axis] && absAngleDelta < minMaxAngularThreshold) //ignore small movement
 								{
 									outAngle[(int)axis] = angleTmp;
-									lastHandVectorProjected[axis] = toHandProjected;
+									lastHandAngleProjected[axis] = currentHandAngle;
 								}
 							}
 							else if (outAngle[(int)axis] == maxAngle[(int)axis]) //is max
@@ -733,13 +730,13 @@ namespace Valve.VR.InteractionSystem
 								if (angleTmp < maxAngle[(int)axis] && absAngleDelta < minMaxAngularThreshold) //ignore small movement
 								{
 									outAngle[(int)axis] = angleTmp;
-									lastHandVectorProjected[axis] = toHandProjected;
+									lastHandAngleProjected[axis] = currentHandAngle;
 								}
 							}
 							else if (angleTmp == minAngle[(int)axis])
 							{
 								outAngle[(int)axis] = angleTmp;
-								lastHandVectorProjected[axis] = toHandProjected;
+								lastHandAngleProjected[axis] = currentHandAngle;
 								onMaxAngle.Invoke();
 								if (freezeOnMax)
 								{
@@ -749,7 +746,7 @@ namespace Valve.VR.InteractionSystem
 							else if (angleTmp == maxAngle[(int)axis])
 							{
 								outAngle[(int)axis] = angleTmp;
-								lastHandVectorProjected[axis] = toHandProjected;
+								lastHandAngleProjected[axis] = currentHandAngle;
 								onMaxAngle.Invoke();
 								if (freezeOnMax)
 								{
@@ -759,13 +756,14 @@ namespace Valve.VR.InteractionSystem
 							else
 							{
 								outAngle[(int)axis] = angleTmp;
-								lastHandVectorProjected[axis] = toHandProjected;
+								lastHandAngleProjected[axis] = currentHandAngle;
 							}
 						}
 						else
 						{
-							outAngle[(int)axis] += signedAngleDelta;
-							lastHandVectorProjected[axis] = toHandProjected;
+							//outAngle[(int)axis] += signedAngleDelta;
+							outAngle[(int)axis] += currentHandAngle;
+							lastHandAngleProjected[axis] = currentHandAngle;
 						}
 					}
 				}
