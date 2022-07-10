@@ -8,11 +8,9 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace Valve.VR.InteractionSystem
+
+//-------------------------------------------------------------------------
+public class nDMapping : MonoBehaviour
 {
-	//-------------------------------------------------------------------------
-	public class nDMapping : MonoBehaviour
-	{
-		public Dictionary<string, float> values = new Dictionary<string, float>();
-	}
+	public Dictionary<string, float> values = new Dictionary<string, float>();
 }

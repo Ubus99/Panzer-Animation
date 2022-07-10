@@ -24,9 +24,12 @@ namespace Valve.VR.InteractionSystem
 
 		[Tooltip("The axis' around which the circular drive will rotate in local space")]
 		public Mode rotateX = Mode.Disabled;
-
 		public Mode rotateY = Mode.Disabled;
 		public Mode rotateZ = Mode.Disabled;
+
+		[Tooltip("If true, the Drive will return to its default posiotion on its own")]
+		public bool returnToCenter = false;
+		public float returnSpeed = 1;
 
 		[Tooltip("Child GameObject which has the Collider component to initiate interaction, only needs to be set if there is more than one Collider child")]
 		public Collider childCollider = null;
@@ -50,13 +53,11 @@ namespace Valve.VR.InteractionSystem
 
 		[Tooltip("If limited, set whether drive will freeze its angle when the min angle is reached")]
 		public bool freezeXOnMin = false;
-
 		public bool freezeYOnMin = false;
 		public bool freezeZOnMin = false;
 
 		[Tooltip("If limited, event invoked when minAngle is reached")]
 		public UnityEvent onXMinAngle;
-
 		public UnityEvent onYMinAngle;
 		public UnityEvent onZMinAngle;
 
@@ -66,13 +67,11 @@ namespace Valve.VR.InteractionSystem
 
 		[Tooltip("If limited, set whether drive will freeze its angle when the max angle is reached")]
 		public bool freezeXOnMax = false;
-
 		public bool freezeYOnMax = false;
 		public bool freezeZOnMax = false;
 
 		[Tooltip("If limited, event invoked when maxAngle is reached")]
 		public UnityEvent onXMaxAngle;
-
 		public UnityEvent onYMaxAngle;
 		public UnityEvent onZMaxAngle;
 
@@ -81,7 +80,6 @@ namespace Valve.VR.InteractionSystem
 
 		[Tooltip("If limited is true and forceStart is true, the starting angle will be this, clamped to [minAngle, maxAngle]")]
 		public float startXAngle = 0.0f;
-
 		public float startYAngle = 0.0f;
 		public float startZAngle = 0.0f;
 
@@ -271,6 +269,18 @@ namespace Valve.VR.InteractionSystem
 			}
 
 			UpdateAll();
+		}
+
+		/// <summary>
+		/// called every tick
+		/// </summary>
+		private void FixedUpdate()
+		{
+			if (returnToCenter && !driving)
+			{
+				outAngle *= 1f - (returnSpeed / 10);
+				UpdateAll();
+			}
 		}
 
 		//-------------------------------------------------

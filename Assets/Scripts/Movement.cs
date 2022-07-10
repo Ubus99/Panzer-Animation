@@ -11,22 +11,32 @@ public class Movement : MonoBehaviour
 	public float dampening = 1;
 	public List<Engine> engines;
 
+	public GameObject turret;
+	public GameObject Aim_Point;
+	public nDMapping turretControler;
+	public float barrelTiltSpeed = 0.25f;
+
+	public nDMapping bodyControler;
+
 	private Rigidbody body;
-	private Rigidbody turret;
-	private Rigidbody barrel_1;
-	private Rigidbody barrel_2;
+	private RaycastHit Hit;
+	public float aimAngle;
 
 	// Start is called before the first frame update
 	void Start()
 	{
 		body = GetComponent<Rigidbody>();
-		turret = GetComponent<Rigidbody>(); //todo
-		barrel_1 = GetComponent<Rigidbody>(); //todo
-		barrel_2 = GetComponent<Rigidbody>(); //todo
 	}
 
 	// Update is called once per physics calc
 	void FixedUpdate()
+	{
+		moveBody();
+		moveTurret();
+		combat();
+	}
+
+	private void moveBody()
 	{
 		//Debug.Log("Current inputs: " + Input.GetAxis("Vertical") + " | " + Input.GetAxis("Horizontal") + "|" + Input.GetAxis("Rotate"));
 		foreach (Engine e in engines)
@@ -52,5 +62,30 @@ public class Movement : MonoBehaviour
 		{
 			body.AddRelativeTorque(Vector3.up * Input.GetAxis("Rotate") * rotationalAcceleration, ForceMode.Force);
 		}
+	}
+
+	private void moveTurret()
+	{
+		float magnitude = Mathf.Pow(turretControler.values["Z"], 2.0f) + Mathf.Pow(turretControler.values["Z"], 2.0f);
+		magnitude = Mathf.Sqrt(magnitude);
+
+		if (magnitude > 0.01f)
+		{
+			turret.transform.Rotate((turretControler.values["Z"] - 0.5f) * 0.75f * Vector3.back, Space.Self);
+
+			aimAngle -= (turretControler.values["X"] - 0.5f) * 0.75f;
+			aimAngle = Mathf.Clamp(aimAngle, 0.0f, 45.0f);
+		}
+
+		Vector3 rayDirection = Quaternion.AngleAxis(aimAngle, turret.transform.up) * -turret.transform.right;
+		Debug.DrawRay(turret.transform.position, rayDirection * 10, Color.red);
+		Aim_Point.transform.position = Physics.Raycast(turret.transform.position, rayDirection, out Hit) && !Hit.transform.CompareTag("Player")
+			? Hit.point
+			: turret.transform.position + (rayDirection * 50);
+	}
+
+	private void combat()
+	{
+
 	}
 }
