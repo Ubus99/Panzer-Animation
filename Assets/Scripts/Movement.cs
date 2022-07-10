@@ -86,6 +86,13 @@ public class Movement : MonoBehaviour
 
 	private void combat()
 	{
-
+		if (Input.GetAxis("Fire1") > 0)
+		{
+			//effects
+			if (Hit.transform.CompareTag("Enemy"))
+			{
+				Hit.transform.SendMessage("hitByAA");
+			}
+		}
 	}
 }

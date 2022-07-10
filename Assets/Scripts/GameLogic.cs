@@ -6,13 +6,20 @@ public class GameLogic : MonoBehaviour
 {
 	public List<GameObject> Enemies;
 	public List<Vector3> SpawnPoints;
+	public GameObject VRPlayer;
+	public GameObject nonVRCam;
 
 	private List<GameObject> InstancedEnemies = new List<GameObject>();
 
 	// Start is called before the first frame update
 	void Start()
 	{
-	   
+		if (StaticData.evaluated == false)
+		{
+			StaticData.CheckHMD();
+		}
+		VRPlayer.SetActive(StaticData.isVR);
+		nonVRCam.SetActive(!StaticData.isVR);
 	}
 
 	// Update is called once per frame
