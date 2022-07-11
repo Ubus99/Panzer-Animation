@@ -1,6 +1,0 @@
-<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
-    <ui:VisualElement name="debugScreen">
-        <ui:Label text="no speed available" display-tooltip-when-elided="true" name="speedIndicator" style="font-size: 30px;" />
-        <ui:Label text="no speed available" display-tooltip-when-elided="true" name="torqueIndicator" style="font-size: 30px;" />
-    </ui:VisualElement>
-</ui:UXML>
