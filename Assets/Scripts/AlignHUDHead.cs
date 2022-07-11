@@ -9,11 +9,12 @@ public class AlignHUDHead : MonoBehaviour
 
 	// Start is called before the first frame update
 	void Start()
-    {
+	{
 		transform.parent = StaticData.isVR switch
 		{
 			true => VR_Cam,
 			_ => Normal_Cam,
 		};
+		transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
 	}
 }

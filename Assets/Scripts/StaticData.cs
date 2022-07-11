@@ -7,6 +7,9 @@ public static class StaticData
 {
 	public static bool isVR = false;
 	public static bool evaluated = false;
+	public static CursorLockMode menuMode = CursorLockMode.None;
+	public static bool inMenu = false;
+
 	public static void CheckHMD()
 	{
 		List<XRDisplaySubsystem> displaySubsystems = new List<XRDisplaySubsystem>();
@@ -18,6 +21,7 @@ public static class StaticData
 			{
 				StaticData.isVR = true;
 				StaticData.evaluated = true;
+				StaticData.menuMode = CursorLockMode.Locked;
 			}
 		}
 	}

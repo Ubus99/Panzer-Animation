@@ -4,19 +4,12 @@ using UnityEngine;
 
 public class VR_Panel : MonoBehaviour
 {
-
 	private Canvas canvas = null;
 	private MenuManager menuManager = null;
 	// Start is called before the first frame update
 	void Awake()
 	{
 		canvas = GetComponent<Canvas>();
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-		
 	}
 
 	public void Setup(MenuManager menuManager)
@@ -32,6 +25,11 @@ public class VR_Panel : MonoBehaviour
 
 	public void Hide()
 	{
-		canvas.enabled = true;
+		canvas.enabled = false;
+	}
+
+	public bool isHidden()
+	{
+		return !canvas.enabled;
 	}
 }

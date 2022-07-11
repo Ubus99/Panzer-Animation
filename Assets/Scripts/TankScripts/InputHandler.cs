@@ -50,7 +50,6 @@ public class InputHandler : MonoBehaviour
 					break;
 			}
 		}
-		Debug.Log("requestedInp " + code + ": " + outp);
 		return outp;
 	}
 }

@@ -26,7 +26,7 @@ public class Movement : MonoBehaviour
 
 	private Rigidbody body;
 	private InputHandler inp;
-	private RaycastHit Hit;
+	private RaycastHit Hit = new RaycastHit();
 
 	// Start is called before the first frame update
 	void Start()
@@ -38,27 +38,34 @@ public class Movement : MonoBehaviour
 	// Update is called once per physics calc
 	void FixedUpdate()
 	{
-		moveBody();
-		moveTurret();
-		combat();
+		BodyPhysics();
+		if (!StaticData.inMenu)
+		{
+			moveBody();
+			moveTurret();
+			combat();
+		}
+	}
+
+	private void BodyPhysics()
+	{
+		foreach (Engine e in engines)
+		{
+			e.Hover(body, springStrength, hoverDistance, dampening);
+		}
 	}
 
 	private void moveBody()
 	{
 		//Debug.Log("Current inputs: " + Input.GetAxis("Vertical") + " | " + Input.GetAxis("Horizontal") + "|" + Input.GetAxis("Rotate"));
-		foreach (Engine e in engines)
-		{
-			e.Hover(body, springStrength, hoverDistance, dampening);
-		}
-
 		if (body.velocity.magnitude >= maxSpeed)
 		{
 			body.velocity = body.velocity.normalized * maxSpeed;
 		}
 		else
 		{
-			body.AddRelativeForce(Vector3.forward * inp.GetAxis("Vertical") * verticalAcceleration, ForceMode.Force);
-			body.AddRelativeForce(Vector3.right * inp.GetAxis("Horizontal") * horizontalAcceleration, ForceMode.Force);
+			body.AddRelativeForce(Vector3.forward * inp.GetAxis("Vertical") * verticalAcceleration * body.mass, ForceMode.Force);
+			body.AddRelativeForce(Vector3.right * inp.GetAxis("Horizontal") * horizontalAcceleration * body.mass, ForceMode.Force);
 		}
 
 		if (body.angularVelocity.magnitude >= maxRotation)
@@ -67,7 +74,7 @@ public class Movement : MonoBehaviour
 		}
 		else
 		{
-			body.AddRelativeTorque(Vector3.up * inp.GetAxis("Rotate") * rotationalAcceleration, ForceMode.Force);
+			body.AddRelativeTorque(Vector3.up * inp.GetAxis("Rotate") * rotationalAcceleration * body.mass, ForceMode.Force);
 		}
 	}
 

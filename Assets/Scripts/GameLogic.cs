@@ -9,6 +9,7 @@ public class GameLogic : MonoBehaviour
 	public List<Vector3> SpawnPoints;
 	public GameObject VRPlayer;
 	public GameObject nonVRCam;
+	public MenuManager menu;
 
 	private List<GameObject> InstancedEnemies = new List<GameObject>();
 
@@ -33,7 +34,6 @@ public class GameLogic : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		menuHandler();
 		combatHandler();
 	}
 
@@ -46,13 +46,16 @@ public class GameLogic : MonoBehaviour
 		}
 	}
 
-	void menuHandler()
-	{
-
-	}
-
 	public void CloseGame()
 	{
-		Application.Quit();
+		//savegame
+
+		#if UNITY_EDITOR
+		// Application.Quit() does not work in the editor so
+		// UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
+		UnityEditor.EditorApplication.isPlaying = false;
+		#else
+			Application.Quit();
+		#endif
 	}
 }

@@ -103,7 +103,7 @@ namespace Valve.VR.InteractionSystem
 
 		private Hand handHoverLocked = null;
 
-		private Interactable interactable;
+        private Interactable interactable;
 
 		//-------------------------------------------------
 		private void Freeze( Hand hand )
@@ -123,13 +123,13 @@ namespace Valve.VR.InteractionSystem
 			frozenHandWorldPos.Set( 0.0f, 0.0f, 0.0f );
 		}
 
-		private void Awake()
-		{
-			interactable = this.GetComponent<Interactable>();
-		}
+        private void Awake()
+        {
+            interactable = this.GetComponent<Interactable>();
+        }
 
-		//-------------------------------------------------
-		private void Start()
+        //-------------------------------------------------
+        private void Start()
 		{
 			if ( childCollider == null )
 			{
@@ -187,7 +187,7 @@ namespace Valve.VR.InteractionSystem
 		{
 			if ( handHoverLocked )
 			{
-				handHoverLocked.HideGrabHint();
+                handHoverLocked.HideGrabHint();
 				handHoverLocked.HoverUnlock(interactable);
 				handHoverLocked = null;
 			}
@@ -202,9 +202,9 @@ namespace Valve.VR.InteractionSystem
 				int nRangeMax = (int)Util.RemapNumberClamped( flMagnitude, 0.0f, 1.0f, 100.0f, 900.0f );
 				nCount = Mathf.Clamp( nCount, 1, 10 );
 
-				//float hapticDuration = nRangeMax * nCount;
+                //float hapticDuration = nRangeMax * nCount;
 
-				//hand.TriggerHapticPulse(hapticDuration, nRangeMax, flMagnitude);
+                //hand.TriggerHapticPulse(hapticDuration, nRangeMax, flMagnitude);
 
 				for ( ushort i = 0; i < nCount; ++i )
 				{
@@ -219,18 +219,18 @@ namespace Valve.VR.InteractionSystem
 		//-------------------------------------------------
 		private void OnHandHoverBegin( Hand hand )
 		{
-			hand.ShowGrabHint();
+            hand.ShowGrabHint();
 		}
 
 
 		//-------------------------------------------------
 		private void OnHandHoverEnd( Hand hand )
 		{
-			hand.HideGrabHint();
+            hand.HideGrabHint();
 
 			if ( driving && hand )
 			{
-				//hand.TriggerHapticPulse() //todo: fix
+                //hand.TriggerHapticPulse() //todo: fix
 				StartCoroutine( HapticPulses( hand, 1.0f, 10 ) );
 			}
 
@@ -238,18 +238,18 @@ namespace Valve.VR.InteractionSystem
 			handHoverLocked = null;
 		}
 
-		private GrabTypes grabbedWithType;
+        private GrabTypes grabbedWithType;
 		//-------------------------------------------------
 		private void HandHoverUpdate( Hand hand )
-		{
-			GrabTypes startingGrabType = hand.GetGrabStarting();
-			bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
+        {
+            GrabTypes startingGrabType = hand.GetGrabStarting();
+            bool isGrabEnding = hand.IsGrabbingWithType(grabbedWithType) == false;
 
-			if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
-			{
-				grabbedWithType = startingGrabType;
-				// Trigger was just pressed
-				lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
+            if (grabbedWithType == GrabTypes.None && startingGrabType != GrabTypes.None)
+            {
+                grabbedWithType = startingGrabType;
+                // Trigger was just pressed
+                lastHandProjected = ComputeToTransformProjected( hand.hoverSphereTransform );
 
 				if ( hoverLock )
 				{
@@ -262,9 +262,9 @@ namespace Valve.VR.InteractionSystem
 				ComputeAngle( hand );
 				UpdateAll();
 
-				hand.HideGrabHint();
+                hand.HideGrabHint();
 			}
-			else if (grabbedWithType != GrabTypes.None && isGrabEnding)
+            else if (grabbedWithType != GrabTypes.None && isGrabEnding)
 			{
 				// Trigger was just released
 				if ( hoverLock )
@@ -273,11 +273,11 @@ namespace Valve.VR.InteractionSystem
 					handHoverLocked = null;
 				}
 
-				driving = false;
-				grabbedWithType = GrabTypes.None;
-			}
+                driving = false;
+                grabbedWithType = GrabTypes.None;
+            }
 
-			if ( driving && isGrabEnding == false && hand.hoveringInteractable == this.interactable )
+            if ( driving && isGrabEnding == false && hand.hoveringInteractable == this.interactable )
 			{
 				ComputeAngle( hand );
 				UpdateAll();
