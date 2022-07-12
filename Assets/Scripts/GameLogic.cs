@@ -6,12 +6,13 @@ public class GameLogic : MonoBehaviour
 {
 	public bool autoVR;
 	public List<GameObject> Enemies;
-	public List<Vector3> SpawnPoints;
-	public GameObject VRPlayer;
-	public GameObject nonVRCam;
+	public List<Transform> SpawnPoints;
+	public int maxEnemies;
 	public MenuManager menu;
+	public float score;
 
 	private List<GameObject> InstancedEnemies = new List<GameObject>();
+	private float timeToSpawn;
 
 	// Start is called before the first frame update
 	void Start()
@@ -22,40 +23,62 @@ public class GameLogic : MonoBehaviour
 			{
 				StaticData.CheckHMD();
 			}
-			VRPlayer.SetActive(StaticData.isVR);
-			nonVRCam.SetActive(!StaticData.isVR);
 		}
 		if (!StaticData.isVR)
 		{
 			Cursor.lockState = CursorLockMode.Locked;
 		}
+		SpawnEnemy();
 	}
 
 	// Update is called once per frame
-	void Update()
+	void FixedUpdate()
 	{
 		combatHandler();
 	}
 
-	void combatHandler()
+	private void combatHandler()
 	{
-		if (InstancedEnemies.Count == 0 && Random.Range(0.0f, 1.0f) > 0.5f && SpawnPoints.Count > 0)
+		if (InstancedEnemies.Count < maxEnemies && SpawnPoints.Count > 0)
 		{
-			InstancedEnemies.Add(Enemies[Random.Range(0, Enemies.Count)]);
-			Instantiate(InstancedEnemies[^1], SpawnPoints[Random.Range(0, SpawnPoints.Count - 1)], Quaternion.identity);
+			if (timeToSpawn <= 0)
+			{
+				timeToSpawn = Random.Range(10.0f, 15.0f);
+				SpawnEnemy();
+			}
+			else
+			{
+				timeToSpawn -= Time.deltaTime;
+			}
+
 		}
+	}
+
+	public void DestroyEnemy(GameObject gameObject)
+	{
+		InstancedEnemies.Remove(gameObject);
+		Destroy(gameObject);
+		score++;
 	}
 
 	public void CloseGame()
 	{
 		//savegame
 
-		#if UNITY_EDITOR
+#if UNITY_EDITOR
 		// Application.Quit() does not work in the editor so
 		// UnityEditor.EditorApplication.isPlaying need to be set to false to end the game
 		UnityEditor.EditorApplication.isPlaying = false;
-		#else
+#else
 			Application.Quit();
-		#endif
+#endif
+	}
+
+	private void SpawnEnemy()
+	{
+		InstancedEnemies.Add(Instantiate(Enemies[Random.Range(0, Enemies.Count)],
+		SpawnPoints[Random.Range(0, SpawnPoints.Count - 1)].position,
+		Quaternion.identity));
+		InstancedEnemies[^1].GetComponent<Debug_Target>().Setup(this);
 	}
 }

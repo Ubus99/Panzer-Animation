@@ -40,10 +40,10 @@ public class InputHandler : MonoBehaviour
 			switch (code)
 			{
 				case "Mouse X":
-					outp = -Mathf.Clamp(Input.GetAxis(code), -1.0f, 1.0f);
+					outp = -Input.GetAxis(code);
 					break;
 				case "Mouse Y":
-					outp = Mathf.Clamp(Input.GetAxis(code), -1.0f, 1.0f);
+					outp = Input.GetAxis(code);
 					break;
 				default:
 					outp = Input.GetAxis(code);

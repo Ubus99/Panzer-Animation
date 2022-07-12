@@ -4,20 +4,20 @@ using UnityEngine;
 
 public class Debug_Target : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	private GameLogic gameLogic;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void hitByAA()
+    public void Setup(GameLogic gameLogic)
 	{
-        Destroy(this);
+        this.gameLogic = gameLogic;
+	}
+
+    void hitByAA(RaycastHit Hit)
+	{
+        gameLogic.DestroyEnemy(this.gameObject);
+	}
+
+	private void OnDestroy()
+	{
+		
 	}
 }

@@ -15,18 +15,21 @@ public class Movement : MonoBehaviour
 	public float rotationalAcceleration = 1;
 	public float maxSpeed, maxRotation = 1;
 
+	[HeaderAttribute("Turret")]
+	public float verticalSensitivity = 0.25f;
+	public float horizontalSensitivity = 0.25f;
+
 	[HeaderAttribute("Hover")]
 	public float hoverDistance = 1;
 	public float springStrength = 1;
 	public float dampening = 1;
 
-	[HeaderAttribute("Turret")]
-	public float barrelTiltSpeed = 0.25f;
-	public float aimAngle;
-
 	private Rigidbody body;
 	private InputHandler inp;
 	private RaycastHit Hit = new RaycastHit();
+
+	private float turretAcc = 0;
+	private float aimAngle;
 
 	// Start is called before the first frame update
 	void Start()
@@ -85,12 +88,14 @@ public class Movement : MonoBehaviour
 
 		if (magnitude > 0.01f)
 		{
-			turret.transform.Rotate(inp.GetAxis("Mouse X") * 0.75f * Vector3.back, Space.Self);
+			turretAcc += inp.GetAxis("Mouse X") * horizontalSensitivity;
+			turretAcc = Mathf.Clamp(turretAcc, -2, 2);
 
-			aimAngle += inp.GetAxis("Mouse Y") * 0.75f;
+			aimAngle += inp.GetAxis("Mouse Y") * verticalSensitivity;
 			aimAngle = Mathf.Clamp(aimAngle, 0.0f, 45.0f);
 		}
 
+		turret.transform.Rotate(turretAcc * Vector3.back, Space.Self);
 		Vector3 rayDirection = Quaternion.AngleAxis(aimAngle, turret.transform.up) * -turret.transform.right;
 		Debug.DrawRay(turret.transform.position, rayDirection * 10, Color.red);
 		Aim_Point.transform.position = Physics.Raycast(turret.transform.position, rayDirection, out Hit) && !Hit.transform.CompareTag("Player")
@@ -100,12 +105,13 @@ public class Movement : MonoBehaviour
 
 	private void combat()
 	{
-		if (Input.GetAxis("Fire1") > 0) //todo vr_ready
+		if (Input.GetAxis("Fire1") > 0 && Hit.transform != null) //todo vr_ready
 		{
 			//effects
 			if (Hit.transform.CompareTag("Enemy"))
 			{
-				Hit.transform.SendMessage("hitByAA");
+				Hit.transform.SendMessage("hitByAA", Hit);
+				Debug.Log("hit " + Hit.transform.name);
 			}
 		}
 	}
