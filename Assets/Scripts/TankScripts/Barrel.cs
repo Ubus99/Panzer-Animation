@@ -4,21 +4,34 @@ using UnityEngine;
 
 public class Barrel : MonoBehaviour
 {
-    private ParticleSystem MFEmitter;
-    // Start is called before the first frame update
-    void Start()
-    {
-		MFEmitter = GetComponentInChildren<ParticleSystem>();
-    }
+	public GameObject MFObject;
+	public AudioClip GunshotAudio;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private float SoundTimer;
+	private ParticleSystem MFEmmitter;
 
-    public void Fire()
+	// Start is called before the first frame update
+	void Start()
 	{
-		MFEmitter.Play();
+		MFEmmitter = MFObject.GetComponent<ParticleSystem>();
+	}
+
+	public void startFire()
+	{
+		MFObject.SetActive(true);
+		if (SoundTimer <= 0)
+		{
+			AudioSource.PlayClipAtPoint(GunshotAudio, MFObject.transform.position);
+			SoundTimer = MFEmmitter.main.duration / MFEmmitter.emission.rateOverTime.constant;
+		}
+		else
+		{
+			SoundTimer -= Time.deltaTime;
+		}
+	}
+
+	public void stopFire()
+	{
+		MFObject.SetActive(false);
 	}
 }

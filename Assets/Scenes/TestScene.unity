@@ -370,7 +370,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 153554345}
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -1549,6 +1549,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   name: 
+--- !u!1 &243319748 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
+  m_PrefabInstance: {fileID: 461476679}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &258802950
 GameObject:
   m_ObjectHideFlags: 0
@@ -2474,6 +2479,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turret: {fileID: 6843836008865928178}
+  barrels:
+  - {fileID: 8300048697221890904}
+  - {fileID: 8790693838716791761}
   Aim_Point: {fileID: 903165523}
   engines:
   - {fileID: 339011425}
@@ -2632,21 +2640,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: WFX_MF FPS RIFLE1
       objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.033
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.033
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.033
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2691,10 +2703,6 @@ PrefabInstance:
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_ConstrainProportionsScale
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 19800004, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
-      propertyPath: looping
-      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_Materials.Array.size
@@ -3500,21 +3508,25 @@ PrefabInstance:
       propertyPath: m_Name
       value: WFX_MF FPS RIFLE1
       objectReference: {fileID: 0}
+    - target: {fileID: 100006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.033
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.033
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.033
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3560,9 +3572,13 @@ PrefabInstance:
       propertyPath: m_ConstrainProportionsScale
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 19800004, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
-      propertyPath: looping
-      value: 0
+    - target: {fileID: 19800000, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 19800000, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 19900000, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
       propertyPath: m_Materials.Array.size
@@ -4091,6 +4107,11 @@ Transform:
   m_Father: {fileID: 258802951}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1001183508 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 100006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
+  m_PrefabInstance: {fileID: 702854377}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &1001183509 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400006, guid: 30b4cc2728d8cec499fad63ba93785a4, type: 3}
@@ -8690,7 +8711,7 @@ Canvas:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1940840885}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_RenderMode: 2
   m_Camera: {fileID: 0}
@@ -10541,6 +10562,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cb957c989e7dd8458554254c018c615, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MFObject: {fileID: 1001183508}
+  GunshotAudio: {fileID: 8300000, guid: d3247579c549643a5b3a95f9224eaf3c, type: 3}
 --- !u!33 &8739294863322658894
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -10594,6 +10617,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9cb957c989e7dd8458554254c018c615, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MFObject: {fileID: 243319748}
+  GunshotAudio: {fileID: 8300000, guid: d3247579c549643a5b3a95f9224eaf3c, type: 3}
 --- !u!33 &9091571776928538222
 MeshFilter:
   m_ObjectHideFlags: 0

@@ -6,6 +6,7 @@ public class Movement : MonoBehaviour
 {
 	[HeaderAttribute("Components")]
 	public GameObject turret;
+	public List<Barrel> barrels = new List<Barrel>();
 	public GameObject Aim_Point;
 	public List<Engine> engines;
 
@@ -96,6 +97,10 @@ public class Movement : MonoBehaviour
 		}
 
 		turret.transform.Rotate(turretAcc * Vector3.back, Space.Self);
+	}
+
+	private void CastRays()
+	{
 		Vector3 rayDirection = Quaternion.AngleAxis(aimAngle, turret.transform.up) * -turret.transform.right;
 		Debug.DrawRay(turret.transform.position, rayDirection * 10, Color.red);
 		Aim_Point.transform.position = Physics.Raycast(turret.transform.position, rayDirection, out Hit) && !Hit.transform.CompareTag("Player")
@@ -105,13 +110,24 @@ public class Movement : MonoBehaviour
 
 	private void combat()
 	{
-		if (Input.GetAxis("Fire1") > 0 && Hit.transform != null) //todo vr_ready
+		if (Input.GetAxis("Fire1") > 0) //todo vr_ready
 		{
+			foreach (Barrel b in barrels)
+			{
+				b.startFire();
+			}
 			//effects
-			if (Hit.transform.CompareTag("Enemy"))
+			if (Hit.transform.CompareTag("Enemy") && Hit.transform != null)
 			{
 				Hit.transform.SendMessage("hitByAA", Hit);
 				Debug.Log("hit " + Hit.transform.name);
+			}
+		}
+		else
+		{
+			foreach (Barrel b in barrels)
+			{
+				b.stopFire();
 			}
 		}
 	}
