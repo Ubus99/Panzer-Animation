@@ -8,7 +8,7 @@ public class GameLogic : MonoBehaviour
 	public List<GameObject> Enemies;
 	public List<Transform> SpawnPoints;
 	public int maxEnemies;
-	public MenuManager menu;
+	public TMPro.TextMeshProUGUI Scoreboard;
 	public float score;
 
 	private List<GameObject> InstancedEnemies = new List<GameObject>();
@@ -34,6 +34,7 @@ public class GameLogic : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate()
 	{
+		Scoreboard.text = score.ToString();
 		combatHandler();
 	}
 

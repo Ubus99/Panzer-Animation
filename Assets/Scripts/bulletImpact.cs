@@ -49,4 +49,12 @@ public class bulletImpact : MonoBehaviour
 			VFXList.Remove(t);
 		}
 	}
+
+	private void OnDestroy()
+	{
+		foreach (GameObject o in VFXList.Values) //find dead objects
+		{
+			Destroy(o);
+		}
+	}
 }

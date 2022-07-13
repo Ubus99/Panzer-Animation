@@ -87,16 +87,28 @@ public class Movement : MonoBehaviour
 		float magnitude = Mathf.Pow(inp.GetAxis("Mouse X"), 2.0f) + Mathf.Pow(inp.GetAxis("Mouse Y"), 2.0f);
 		magnitude = Mathf.Sqrt(magnitude);
 
-		if (magnitude > 0.01f)
+		if (magnitude > 0.01f) // todo slow down rotation
 		{
 			turretAcc += inp.GetAxis("Mouse X") * horizontalSensitivity;
-			turretAcc = Mathf.Clamp(turretAcc, -2, 2);
+			turretAcc = Mathf.Clamp(turretAcc, -0.5f, 0.5f);
 
 			aimAngle += inp.GetAxis("Mouse Y") * verticalSensitivity;
 			aimAngle = Mathf.Clamp(aimAngle, 0.0f, 45.0f);
 		}
 
-		turret.transform.Rotate(turretAcc * Vector3.back, Space.Self);
+		float temp = turret.transform.localEulerAngles.z;
+		Debug.Log(temp);
+		temp -= turretAcc;
+		if (temp is <= 180 and > 90)
+		{
+			temp = 90;
+		}
+		else if (temp is >= 180 and < 270)
+		{
+			temp = 270;
+		}
+		turret.transform.localRotation = Quaternion.Euler(0, 0, temp);
+		//turret.transform.Rotate(turretAcc * Vector3.back, Space.Self);
 	}
 
 	private void CastRays()
@@ -121,7 +133,7 @@ public class Movement : MonoBehaviour
 				b.startFire();
 			}
 			//effects
-			if (Hit.transform != null)
+			if (Hit.transform != null && Time.fixedTime > 0.1f)
 			{
 				Hit.transform.SendMessage("hitByAA", Hit);
 				Debug.Log("hit " + Hit.transform.name);
