@@ -4,17 +4,17 @@ using UnityEngine;
 
 public class EnemySpaceshipControler : MonoBehaviour
 {
-    private Plane planeController;
+	private Plane planeController;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+	// Start is called before the first frame update
+	void Start()
+	{
+		
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update()
+	{
+		
+	}
 }
