@@ -11,7 +11,7 @@ public class GameLogic : MonoBehaviour
 	public TMPro.TextMeshProUGUI Scoreboard;
 	public float score;
 
-	private List<GameObject> InstancedEnemies = new List<GameObject>();
+	private Dictionary<Vector3, GameObject> InstancedEnemies = new Dictionary<Vector3, GameObject>();
 	private float timeToSpawn;
 
 	// Start is called before the first frame update
@@ -57,7 +57,7 @@ public class GameLogic : MonoBehaviour
 
 	public void DestroyEnemy(GameObject gameObject, float killDelay)
 	{
-		InstancedEnemies.Remove(gameObject);
+		InstancedEnemies.Remove(gameObject.transform.position);
 		Destroy(gameObject, killDelay);
 		score++;
 	}
@@ -77,9 +77,12 @@ public class GameLogic : MonoBehaviour
 
 	private void SpawnEnemy()
 	{
-		InstancedEnemies.Add(Instantiate(Enemies[Random.Range(0, Enemies.Count)],
-		SpawnPoints[Random.Range(0, SpawnPoints.Count - 1)].position,
-		Quaternion.identity));
-		InstancedEnemies[^1].GetComponent<Debug_Target>().Setup(this);
+		Vector3 position;
+		do {
+			position = SpawnPoints[Random.Range(0, SpawnPoints.Count - 1)].position;
+		} while (InstancedEnemies.ContainsKey(position));
+		InstancedEnemies.Add(position, Instantiate(Enemies[Random.Range(0, Enemies.Count)],
+			position, Quaternion.identity));
+			InstancedEnemies[position].GetComponent<Debug_Target>().Setup(this);
 	}
 }
