@@ -54,10 +54,10 @@ public class GameLogic : MonoBehaviour
 		}
 	}
 
-	public void DestroyEnemy(GameObject gameObject)
+	public void DestroyEnemy(GameObject gameObject, float killDelay)
 	{
 		InstancedEnemies.Remove(gameObject);
-		Destroy(gameObject);
+		Destroy(gameObject, killDelay);
 		score++;
 	}
 

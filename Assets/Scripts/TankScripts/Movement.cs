@@ -47,6 +47,7 @@ public class Movement : MonoBehaviour
 		{
 			moveBody();
 			moveTurret();
+			CastRays();
 			combat();
 		}
 	}
@@ -61,7 +62,6 @@ public class Movement : MonoBehaviour
 
 	private void moveBody()
 	{
-		//Debug.Log("Current inputs: " + Input.GetAxis("Vertical") + " | " + Input.GetAxis("Horizontal") + "|" + Input.GetAxis("Rotate"));
 		if (body.velocity.magnitude >= maxSpeed)
 		{
 			body.velocity = body.velocity.normalized * maxSpeed;
@@ -101,7 +101,11 @@ public class Movement : MonoBehaviour
 
 	private void CastRays()
 	{
-		Vector3 rayDirection = Quaternion.AngleAxis(aimAngle, turret.transform.up) * -turret.transform.right;
+		Quaternion aimDirection = Quaternion.AngleAxis(aimAngle, turret.transform.up);
+		//Quaternion radialSpread = Quaternion.AngleAxis(Random.value * 360, turret.transform.right);
+		//Quaternion axialSpread = Quaternion.AngleAxis(Random.value * gunSpread, turret.transform.forward);
+
+		Vector3 rayDirection = aimDirection * /*radialSpread * axialSpread * */-turret.transform.right;
 		Debug.DrawRay(turret.transform.position, rayDirection * 10, Color.red);
 		Aim_Point.transform.position = Physics.Raycast(turret.transform.position, rayDirection, out Hit) && !Hit.transform.CompareTag("Player")
 			? Hit.point
@@ -117,7 +121,7 @@ public class Movement : MonoBehaviour
 				b.startFire();
 			}
 			//effects
-			if (Hit.transform.CompareTag("Enemy") && Hit.transform != null)
+			if (Hit.transform != null)
 			{
 				Hit.transform.SendMessage("hitByAA", Hit);
 				Debug.Log("hit " + Hit.transform.name);

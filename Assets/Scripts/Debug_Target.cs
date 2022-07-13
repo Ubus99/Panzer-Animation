@@ -4,20 +4,31 @@ using UnityEngine;
 
 public class Debug_Target : MonoBehaviour
 {
+	public int leben;
+	public float killDelay;
+
 	private GameLogic gameLogic;
 
-    public void Setup(GameLogic gameLogic)
+	public void Setup(GameLogic gameLogic)
 	{
-        this.gameLogic = gameLogic;
+		this.gameLogic = gameLogic;
 	}
 
-    void hitByAA(RaycastHit Hit)
+	void FixedUpdate()
 	{
-        gameLogic.DestroyEnemy(this.gameObject);
+		if (leben <= 0)
+		{
+			gameLogic.DestroyEnemy(this.gameObject, killDelay);
+		}
+	}
+
+	public void hitByAA(RaycastHit Hit)
+	{
+		leben--;
 	}
 
 	private void OnDestroy()
 	{
-		
+
 	}
 }
